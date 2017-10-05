@@ -12,9 +12,9 @@
 - name: Update EPEL with no proxy
   yum:
     name: epel-release
-    state: present
+    state: absent
 
-#- name: Update EPEL with no proxy
-#  yum:
-#    name: "https://dl.fedoraproject.org/pub/epel/epel-release-latest-{{ ansible_distribution_major_version }}.noarch.rpm"
-#    state: present
+- name: Update EPEL with no proxy
+  yum:
+    name: "https://dl.fedoraproject.org/pub/epel/epel-release-latest-{{ ansible_distribution_major_version }}.noarch.rpm"
+    state: present

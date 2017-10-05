@@ -12,7 +12,7 @@
 - name: Update EPEL with proxy
   yum:
     name: epel-release
-    state: present
+    state: absent
   environment:
     http_proxy: "{{ http_proxy }}"
     https_proxy: "{{ https_proxy }}"
