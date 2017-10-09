@@ -17,6 +17,7 @@
 - name: Update EPEL with no proxy
   yum:
     name: epel-release
+    allow_downgrade: yes
     state: present
 
 #- name: Update EPEL with no proxy
