@@ -33,6 +33,14 @@
       name: epel-release
       state: absent
 
+  - name: Yum clean
+    shell: "yum clean all"
+
+  - name: Remove yum cache
+    file:
+      path: /var/cache/yum
+      state: absent
+
   - name: Update with EPEL 6 with no proxy
     yum:
       name: "https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm"
