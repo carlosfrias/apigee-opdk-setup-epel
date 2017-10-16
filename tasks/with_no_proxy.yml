@@ -43,6 +43,6 @@
 
   - name: Update with EPEL 6 with no proxy
     yum:
-      name: "https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm"
+      name: "{{ epel_7_repo }}"
       state: present
   when: opdk_version | version_compare('4.17.05', '<=')
