@@ -5,7 +5,7 @@
   when: ansible_bios_version | lower | search('amazon') and ansible_distribution | lower != 'redhat' and ansible_distribution_major_version | version_compare('6', '>')
 
 # TODO: Look up the ansible_distribution name for RHEL systems
-- name: If using RHEL then register RHEL on RHN
+- name: Register with Redhat Subscription management
   shell: "subscription-manager register --username={{ rhel_user_name }} --password={{ rhel_password }} --auto-attach"
   when: ansible_distribution | lower == 'redhat' and ansible_distribution_major_version | version_compare('7', '>')
 
