@@ -1,5 +1,5 @@
 ---
-- name: Validate that versions are available
+- name: Validate that distribution info is available are available
   setup:
   when: ansible_distribution_major_version is not defined or ansible_distribution is not defined or ansible_bios_version is not defined
 
