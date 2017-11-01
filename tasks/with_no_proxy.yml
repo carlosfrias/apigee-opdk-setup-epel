@@ -1,15 +1,18 @@
 ---
 # tasks file for apigee-opdk-setup-epel
 - name: Configure AWS AMI OS package manager repositories for Apigee
+  become: yes
   shell: "/usr/bin/yum-config-manager --enable rhui-REGION-rhel-server-extras rhui-REGION-rhel-server-optional"
   when: ansible_bios_version | lower | search('amazon') and ansible_distribution | lower != 'redhat' and ansible_distribution_major_version | version_compare('6', '>')
 
 # TODO: Look up the ansible_distribution name for RHEL systems
 - name: Register with Redhat Subscription management
+  become: yes
   shell: "subscription-manager register --username={{ rhel_user_name }} --password={{ rhel_password }} --auto-attach"
   when: ansible_distribution | lower == 'redhat' and ansible_distribution_major_version | version_compare('7', '>')
 
 - name: Update EPEL with no proxy
+  become: yes
   yum:
     name: epel-release
     state: absent
@@ -22,6 +25,7 @@
 #    state: present
 
 - name: Update EPEL with no proxy
+  become: yes
   yum:
     name: "https://dl.fedoraproject.org/pub/epel/epel-release-latest-{{ ansible_distribution_major_version }}.noarch.rpm"
     state: present
@@ -29,19 +33,23 @@
 
 - block:
   - name: Remove epel
+    become: yes
     yum:
       name: epel-release
       state: absent
 
   - name: Yum clean
+    become: yes
     shell: "yum clean all"
 
   - name: Remove yum cache
+    become: yes
     file:
       path: /var/cache/yum
       state: absent
 
   - name: Update with EPEL 6 with no proxy
+    become: yes
     yum:
       name: "{{ epel_7_repo }}"
       state: present
