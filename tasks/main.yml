@@ -3,6 +3,16 @@
   setup:
   when: ansible_distribution_major_version is not defined or ansible_distribution is not defined or ansible_bios_version is not defined
 
+- name: Configure AWS AMI OS package manager repositories for Apigee
+  become: yes
+  shell: "/usr/bin/yum-config-manager --enable rhui-REGION-rhel-server-extras rhui-REGION-rhel-server-optional"
+  when: ansible_bios_version | lower | search('amazon') and ansible_distribution | lower != 'redhat' and ansible_distribution_major_version | version_compare('6', '>')
+
+- name: Register with Redhat Subscription management
+  become: yes
+  shell: "subscription-manager register --username={{ rhel_user_name }} --password={{ rhel_password }} --auto-attach"
+  when: ansible_distribution | lower == 'redhat' and ansible_distribution_major_version | version_compare('7', '>')
+
 - name: Configure EPEL with no proxy
   include_tasks: with_no_proxy.yml
   when: (https_proxy is not defined or https_proxy | trim == '') and (http_proxy is not defined or http_proxy | trim == '') and (no_proxy is not defined or no_proxy | trim == '')
