@@ -13,10 +13,61 @@
   shell: "subscription-manager register --username={{ rhel_user_name }} --password={{ rhel_password }} --auto-attach"
   when: ansible_distribution | lower == 'redhat' and ansible_distribution_major_version | version_compare('7', '>')
 
-- name: Configure EPEL with no proxy
-  include_tasks: with_no_proxy.yml
-  when: (https_proxy is not defined or https_proxy | trim == '') and (http_proxy is not defined or http_proxy | trim == '') and (no_proxy is not defined or no_proxy | trim == '')
+- name: Update EPEL with proxy
+  become: yes
+  yum:
+    name: epel-release
+    state: absent
+  when: opdk_version | version_compare('4.16.09', '==')
+  environment:
+    http_proxy: "{{ http_proxy }}"
+    https_proxy: "{{ https_proxy }}"
+    no_proxy: "{{ no_proxy }}"
 
-- name: Configure EPEL with proxy
-  include_tasks: with_proxy.yml
-  when: (https_proxy is defined or https_proxy | trim != '') and (http_proxy is defined or http_proxy | trim != '') and (no_proxy is defined or no_proxy | trim != '')
+- name: Update EPEL with proxy
+  become: yes
+  yum:
+    name: epel-release
+    state: present
+    allow_downgrade: yes
+  when: opdk_version | version_compare('4.17.05', '>')
+  environment:
+    http_proxy: "{{ http_proxy }}"
+    https_proxy: "{{ https_proxy }}"
+    no_proxy: "{{ no_proxy }}"
+
+- block:
+  - name: Remove epel
+    become: yes
+    yum:
+      name: epel-release
+      state: absent
+    environment:
+      http_proxy: "{{ http_proxy }}"
+      https_proxy: "{{ https_proxy }}"
+      no_proxy: "{{ no_proxy }}"
+
+  - name: Yum clean
+    become: yes
+    shell: "yum clean all"
+    environment:
+      http_proxy: "{{ http_proxy }}"
+      https_proxy: "{{ https_proxy }}"
+      no_proxy: "{{ no_proxy }}"
+
+  - name: Remove yum cache
+    become: yes
+    file:
+      path: /var/cache/yum
+      state: absent
+
+  - name: Update EPEL with proxy
+    become: yes
+    yum:
+      name: "{{ epel_repo }}"
+      state: present
+    environment:
+      http_proxy: "{{ http_proxy }}"
+      https_proxy: "{{ https_proxy }}"
+      no_proxy: "{{ no_proxy }}"
+  when: opdk_version | version_compare('4.17.05', '<=')

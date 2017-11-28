@@ -1,29 +1,62 @@
 ---
 # tasks file for apigee-opdk-setup-epel
 - name: Update EPEL with proxy
+  become: yes
   yum:
     name: epel-release
     state: absent
+  when: opdk_version | version_compare('4.16.09', '==')
   environment:
     http_proxy: "{{ http_proxy }}"
     https_proxy: "{{ https_proxy }}"
     no_proxy: "{{ no_proxy }}"
 
 - name: Update EPEL with proxy
+  become: yes
   yum:
     name: epel-release
     state: present
     allow_downgrade: yes
+  when: opdk_version | version_compare('4.17.05', '>')
   environment:
     http_proxy: "{{ http_proxy }}"
     https_proxy: "{{ https_proxy }}"
     no_proxy: "{{ no_proxy }}"
 
-- name: Update EPEL with proxy
-  yum:
-    name: "{{ epel_repo }}"
-    state: present
-  environment:
-    http_proxy: "{{ http_proxy }}"
-    https_proxy: "{{ https_proxy }}"
-    no_proxy: "{{ no_proxy }}"
+- block:
+  - name: Remove epel
+    become: yes
+    yum:
+      name: epel-release
+      state: absent
+    environment:
+      http_proxy: "{{ http_proxy }}"
+      https_proxy: "{{ https_proxy }}"
+      no_proxy: "{{ no_proxy }}"
+
+  - name: Yum clean
+    become: yes
+    shell: "yum clean all"
+    environment:
+      http_proxy: "{{ http_proxy }}"
+      https_proxy: "{{ https_proxy }}"
+      no_proxy: "{{ no_proxy }}"
+
+  - name: Remove yum cache
+    become: yes
+    file:
+      path: /var/cache/yum
+      state: absent
+
+  - name: Update EPEL with proxy
+    become: yes
+    yum:
+      name: "{{ epel_repo }}"
+      state: present
+      no_proxy: "{{ no_proxy }}"
+    environment:
+      http_proxy: "{{ http_proxy }}"
+      https_proxy: "{{ https_proxy }}"
+      no_proxy: "{{ no_proxy }}"
+
+  when: opdk_version | version_compare('4.17.05', '<=')
