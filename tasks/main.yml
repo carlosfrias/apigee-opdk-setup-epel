@@ -94,3 +94,4 @@
        dest: /etc/yum.repos.d/epel.repo"
 
   when: epel.stat.exists
+  become: true
