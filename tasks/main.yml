@@ -62,16 +62,15 @@
       no_proxy: "{{ no_proxy }}"
 
   rescue:
-  - name: Update EPEL with direct rpm if 4.17.05 or less
-    become: yes
-    yum:
-      name: "{{ epel_repo }}"
-      state: present
-    environment:
-      http_proxy: "{{ http_proxy }}"
-      https_proxy: "{{ https_proxy }}"
-      no_proxy: "{{ no_proxy }}"
-    when: opdk_version | version_compare('4.17.05', '<=')
+    - name: Update EPEL with direct rpm if 4.17.05 or less
+      become: yes
+      yum:
+        name: "{{ epel_repo }}"
+        state: present
+      environment:
+        http_proxy: "{{ http_proxy }}"
+        https_proxy: "{{ https_proxy }}"
+        no_proxy: "{{ no_proxy }}"
 
 - name: Check for existence of epel.repo
   stat:
