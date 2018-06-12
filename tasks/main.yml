@@ -48,28 +48,30 @@
     path: /var/cache/yum
     state: absent
 
-- name: Update with EPEL downgrade allowed if 4.17.09 or greater
-  become: yes
-  yum:
-    name: epel-release
-    state: present
-    allow_downgrade: yes
-  when: opdk_version | version_compare('4.17.05', '>')
-  environment:
-    http_proxy: "{{ http_proxy }}"
-    https_proxy: "{{ https_proxy }}"
-    no_proxy: "{{ no_proxy }}"
+- block:
+  - name: Update with EPEL downgrade allowed if 4.17.09 or greater
+    become: yes
+    yum:
+      name: epel-release
+      state: present
+      allow_downgrade: yes
+    when: opdk_version | version_compare('4.17.05', '>')
+    environment:
+      http_proxy: "{{ http_proxy }}"
+      https_proxy: "{{ https_proxy }}"
+      no_proxy: "{{ no_proxy }}"
 
-- name: Update EPEL with direct rpm if 4.17.05 or less
-  become: yes
-  yum:
-    name: "{{ epel_repo }}"
-    state: present
-  environment:
-    http_proxy: "{{ http_proxy }}"
-    https_proxy: "{{ https_proxy }}"
-    no_proxy: "{{ no_proxy }}"
-  when: opdk_version | version_compare('4.17.05', '<=')
+  rescue:
+  - name: Update EPEL with direct rpm if 4.17.05 or less
+    become: yes
+    yum:
+      name: "{{ epel_repo }}"
+      state: present
+    environment:
+      http_proxy: "{{ http_proxy }}"
+      https_proxy: "{{ https_proxy }}"
+      no_proxy: "{{ no_proxy }}"
+    when: opdk_version | version_compare('4.17.05', '<=')
 
 - name: Check for existence of epel.repo
   stat:
