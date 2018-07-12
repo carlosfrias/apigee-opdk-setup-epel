@@ -11,24 +11,24 @@
   - name: Configure AWS AMI OS package manager repositories for Apigee
     become: yes
     shell: "/usr/bin/yum-config-manager --enable rhui-REGION-rhel-server-extras rhui-REGION-rhel-server-optional"
-  when: ansible_bios_version | lower | search('amazon') and ansible_distribution | lower != 'redhat' and ansible_distribution_major_version | version_compare('6', '>')
+  when: ansible_bios_version | lower | search('amazon') and ansible_distribution | lower != 'redhat' and ansible_distribution_major_version is version_compare('6', '>')
 
 - name: Register with Redhat Subscription management
   become: yes
   shell: "subscription-manager register --username={{ rhel_user_name }} --password={{ rhel_password }} --auto-attach"
-  when: ansible_distribution | lower == 'redhat' and ansible_distribution_major_version | version_compare('7', '>')
+  when: ansible_distribution | lower == 'redhat' and ansible_distribution_major_version is version_compare('7', '>')
 
 - name: Configure AWS AMI OS package manager repositories for Apigee
   become: yes
   shell: "/usr/bin/yum-config-manager --enable ol7_optional_latest"
-  when: ansible_distribution | lower == 'oraclelinux' and ansible_distribution_major_version | version_compare('7', '>')
+  when: ansible_distribution | lower == 'oraclelinux' and ansible_distribution_major_version is version_compare('7', '>')
 
 - name: Remove existing epel repository references
   become: yes
   yum:
     name: epel-release
     state: absent
-  when: opdk_version | version_compare('4.17.05', '<=')
+  when: opdk_version is version_compare('4.17.05', '<=')
   environment:
     http_proxy: "{{ http_proxy }}"
     https_proxy: "{{ https_proxy }}"
@@ -55,7 +55,7 @@
       name: epel-release
       state: present
       allow_downgrade: yes
-    when: opdk_version | version_compare('4.17.05', '>')
+    when: opdk_version is version_compare('4.17.05', '>')
     environment:
       http_proxy: "{{ http_proxy }}"
       https_proxy: "{{ https_proxy }}"
