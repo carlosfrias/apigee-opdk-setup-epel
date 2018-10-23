@@ -30,17 +30,17 @@
     state: absent
   when: opdk_version is version_compare('4.17.05', '<=')
   environment:
-    http_proxy: "{{ http_proxy }}"
-    https_proxy: "{{ https_proxy }}"
-    no_proxy: "{{ no_proxy }}"
+    http_proxy: "{{ http_proxy | default('') }}"
+    https_proxy: "{{ https_proxy | default('') }}"
+    no_proxy: "{{ no_proxy | default('') }}"
 
 - name: Yum clean
   become: yes
   shell: "yum clean all"
   environment:
-    http_proxy: "{{ http_proxy }}"
-    https_proxy: "{{ https_proxy }}"
-    no_proxy: "{{ no_proxy }}"
+    http_proxy: "{{ http_proxy | default('') }}"
+    https_proxy: "{{ https_proxy | default('') }}"
+    no_proxy: "{{ no_proxy | default('') }}"
 
 - name: Remove yum cache
   become: yes
@@ -57,9 +57,9 @@
       allow_downgrade: yes
     when: opdk_version is version_compare('4.17.05', '>')
     environment:
-      http_proxy: "{{ http_proxy }}"
-      https_proxy: "{{ https_proxy }}"
-      no_proxy: "{{ no_proxy }}"
+      http_proxy: "{{ http_proxy | default('') }}"
+      https_proxy: "{{ https_proxy | default('') }}"
+      no_proxy: "{{ no_proxy | default('') }}"
 
   rescue:
     - name: Update EPEL with direct rpm if 4.17.05 or less
@@ -68,9 +68,9 @@
         name: "{{ epel_repo }}"
         state: present
       environment:
-        http_proxy: "{{ http_proxy }}"
-        https_proxy: "{{ https_proxy }}"
-        no_proxy: "{{ no_proxy }}"
+        http_proxy: "{{ http_proxy | default('') }}"
+        https_proxy: "{{ https_proxy | default('') }}"
+        no_proxy: "{{ no_proxy | default('') }}"
 
 - name: Check for existence of epel.repo
   stat:
