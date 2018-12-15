@@ -28,7 +28,6 @@
   yum:
     name: epel-release
     state: absent
-  when: opdk_version is version_compare('4.17.05', '<=')
   environment:
     http_proxy: "{{ http_proxy | default('') }}"
     https_proxy: "{{ https_proxy | default('') }}"
@@ -54,8 +53,6 @@
     yum:
       name: epel-release
       state: present
-      allow_downgrade: yes
-    when: opdk_version is version_compare('4.17.05', '>')
     environment:
       http_proxy: "{{ http_proxy | default('') }}"
       https_proxy: "{{ https_proxy | default('') }}"
