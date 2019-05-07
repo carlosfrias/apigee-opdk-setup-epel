@@ -62,15 +62,28 @@
       no_proxy: "{{ no_proxy }}"
 
   rescue:
-    - name: Update EPEL with direct rpm if 4.17.05 or less
-      become: yes
-      yum:
-        name: "{{ epel_repo }}"
-        state: present
-      environment:
-        http_proxy: "{{ http_proxy }}"
-        https_proxy: "{{ https_proxy }}"
-        no_proxy: "{{ no_proxy }}"
+    - block:
+      - name: Update EPEL with direct rpm if 4.17.05 or less
+        become: yes
+        yum:
+          name: "{{ epel_repo }}"
+          state: present
+        environment:
+          http_proxy: "{{ http_proxy }}"
+          https_proxy: "{{ https_proxy }}"
+          no_proxy: "{{ no_proxy }}"
+    rescue:
+      - name: Update EPEL with direct rpm if 4.17.05 or less
+        become: yes
+        yum:
+          name: "{{ epel_repo }}"
+          state: present
+          disable_gpg_check: yes
+        environment:
+          http_proxy: "{{ http_proxy }}"
+          https_proxy: "{{ https_proxy }}"
+          no_proxy: "{{ no_proxy }}"
+
 
 - name: Check for existence of epel.repo
   stat:
