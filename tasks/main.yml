@@ -48,7 +48,7 @@
     state: absent
 
 - block:
-  - name: Update with EPEL downgrade allowed if 4.17.09 or greater
+  - name: Update with EPEL downgrade allowed
     become: yes
     yum:
       name: epel-release
@@ -60,7 +60,7 @@
 
   rescue:
     - block:
-      - name: Update EPEL with direct rpm if 4.17.05 or less
+      - name: Update EPEL with direct rpm if downgrade allowed failed
         become: yes
         yum:
           name: "{{ epel_repo }}"
@@ -70,7 +70,7 @@
           https_proxy: "{{ https_proxy | default('')  }}"
           no_proxy: "{{ no_proxy | default('')  }}"
       rescue:
-        - name: Update EPEL with direct rpm if 4.17.05 or less
+        - name: Update EPEL with direct rpm if rescue from failed downgrade allowed also failed
           become: yes
           yum:
             name: "{{ epel_repo }}"
